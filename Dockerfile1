@@ -1,0 +1,26 @@
+FROM node:22-alpine
+
+RUN apk update --no-cache && \
+    apk add --no-cache --update libc6-compat openssl && \
+    corepack disable yarn && \
+    npm uninstall -g corepack
+
+RUN \
+  echo '{' > package.json && \
+  echo '  "name": "repro",' >> package.json && \
+  echo '  "private": true,' >> package.json && \
+  echo '  "version": "1.0.0",' >> package.json && \
+  echo '  "type": "module",' >> package.json && \
+  echo '  "devDependencies": {' >> package.json && \
+  echo '    "turbo": "^2.5.3"' >> package.json && \
+  echo '  },' >> package.json && \
+  echo '  "packageManager": "pnpm@10.11.0"' >> package.json && \
+  echo '}' >> package.json
+
+RUN PNPM_VERSION=$(grep '"packageManager":' package.json | sed -E 's/.*"pnpm@([^"]+)".*/\1/') && \
+    wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" PNPM_VERSION=$PNPM_VERSION sh -
+
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN pnpm add -g turbo

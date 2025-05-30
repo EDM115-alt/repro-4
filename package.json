@@ -1,0 +1,9 @@
+{
+  "name": "repro-4",
+  "version": "1.0.0",
+  "scripts": {
+    "repro-1": "docker build -t repro-1 -f Dockerfile1 --no-cache .",
+    "repro-2": "docker build -t repro-2 -f Dockerfile2 --no-cache ."
+  },
+  "packageManager": "pnpm@10.11.0"
+}
